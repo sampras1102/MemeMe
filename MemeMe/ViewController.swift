@@ -79,6 +79,7 @@ class ViewController : UIViewController, UIImagePickerControllerDelegate, UINavi
             if completed{
             self.save(memedImage)
             self.dismissViewControllerAnimated(true, completion: nil)
+            self.showEntryPoint()
             }
         }
         self.presentViewController(avc, animated: true, completion: nil)
@@ -92,6 +93,11 @@ class ViewController : UIViewController, UIImagePickerControllerDelegate, UINavi
         pickerControl.delegate = self
         self.presentViewController(pickerControl, animated: true, completion: nil)
         
+    }
+    
+    func showEntryPoint(){
+                let editController = self.storyboard!.instantiateViewControllerWithIdentifier("EntryPointViewController") as! UITabBarController
+        self.presentViewController(editController, animated: true, completion: nil)
     }
     
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [NSObject : AnyObject]){
