@@ -14,12 +14,17 @@ class ViewController : UIViewController, UIImagePickerControllerDelegate, UINavi
     @IBOutlet weak var bottomText: UITextField!
     @IBOutlet weak var cameraButton: UIBarButtonItem!
     @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var toolbar: UIToolbar!
+    @IBOutlet weak var navigationBar: UINavigationBar!
+    @IBOutlet weak var shareButton: UIBarButtonItem!
+    
     var topDel = MemeTextFieldDelegate(initialText: "TOP") //can't use a constant to define initial text because I am instantiating the object here
     var bottomDel = MemeTextFieldDelegate(initialText: "BOTTOM")
 
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        shareButton.enabled = false
         //TODO: Make sure I am handling the optionals in an acceptable way
         topText.delegate = topDel
         bottomText.delegate = bottomDel
@@ -67,24 +72,42 @@ class ViewController : UIViewController, UIImagePickerControllerDelegate, UINavi
         self.presentViewController(pickerControl, animated: true, completion: nil)
     }
     
+    @IBAction func share(sender: AnyObject) {
+        var memedImage = generateMemedImage()
+        var avc = UIActivityViewController(activityItems: [memedImage], applicationActivities: nil)
+        avc.completionWithItemsHandler = {activityType, completed, returnedItems, error in
+            if completed{
+            self.save(memedImage)
+            self.dismissViewControllerAnimated(true, completion: nil)
+            }
+        }
+        self.presentViewController(avc, animated: true, completion: nil)
+        
+    }
+    
     @IBAction func pickAnImageFromCamera(sender: AnyObject) {
         println("in pick an image")
         let pickerControl = UIImagePickerController()
         pickerControl.sourceType = UIImagePickerControllerSourceType.Camera
         pickerControl.delegate = self
         self.presentViewController(pickerControl, animated: true, completion: nil)
+        
     }
     
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [NSObject : AnyObject]){
         //didFinishPickingMediaWithInfo is the external name
         if let image = info[UIImagePickerControllerOriginalImage] as? UIImage{
             imageView.image = image
-            println("image picked")
+            shareButton.enabled = true
         }
         self.dismissViewControllerAnimated(true, completion: nil)
     }
     func imagePickerControllerDidCancel(picker: UIImagePickerController){
         self.dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    override func prefersStatusBarHidden() -> Bool{
+        return true
     }
     
     func subscribeToKeyboardNotifications() {
@@ -122,16 +145,30 @@ class ViewController : UIViewController, UIImagePickerControllerDelegate, UINavi
         return keyboardSize.CGRectValue().height
     }
     
-//    Let’s think about the specifications for the MemeMe textfields.
-//    
-//    1. There should be two textfields, reading “TOP” and “BOTTOM” when a user opens the Meme Editor. You can set a textfield’s initial text by setting its text property in viewDidLoad.
-//    
-//    2. Text should be center-aligned. For this you can set the textfield’s textAlignment property in viewDidLoad.
-//    
-//    3. Text should approximate the "Impact" font, all caps, white with a black outline. For this we will make use of the defaultTextAttributes dictionary that governs font appearance. Details to come in the next segment.
-//    
-//    4. When a user taps inside a textfield, the default text should clear. This can be accomplished in textFieldDidBeginEditing method. Be sure to remove default text only, not user entered text.
-//    
-//    5. When a user presses return, the keyboard should be dismissed. This can be accomplished in textFieldShouldReturn.
+    func save(memedImage:UIImage) {
+        //Create the meme
+        var meme = Meme(topString: topText.text, bottomString: bottomText.text, originalImage: imageView.image!, memedImage: memedImage)
+        (UIApplication.sharedApplication().delegate as! AppDelegate).memes.append(meme)
+        println("saving the meme")
+    }
+    
+    func generateMemedImage() -> UIImage {
+        
+        toolbar.hidden = true
+        navigationBar.hidden = true
+        
+        // Render view to an image
+        UIGraphicsBeginImageContext(self.view.frame.size)
+        self.view.drawViewHierarchyInRect(self.view.frame,
+            afterScreenUpdates: true)
+        let memedImage : UIImage =
+        UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        toolbar.hidden = false
+        navigationBar.hidden = false
+        
+        return memedImage
+    }
 }
 
