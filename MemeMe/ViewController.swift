@@ -17,11 +17,13 @@ class ViewController : UIViewController, UIImagePickerControllerDelegate, UINavi
     @IBOutlet weak var toolbar: UIToolbar!
     @IBOutlet weak var navigationBar: UINavigationBar!
     @IBOutlet weak var shareButton: UIBarButtonItem!
+    @IBOutlet weak var lblInstructions: UILabel!
+    
     
     var topDel = MemeTextFieldDelegate(initialText: "TOP") //can't use a constant to define initial text because I am instantiating the object here
+    
     var bottomDel = MemeTextFieldDelegate(initialText: "BOTTOM")
 
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         shareButton.enabled = false
@@ -30,6 +32,10 @@ class ViewController : UIViewController, UIImagePickerControllerDelegate, UINavi
         bottomText.delegate = bottomDel
         setTextBoxProps(topText, initText: topDel.initText)
         setTextBoxProps(bottomText, initText: bottomDel.initText)
+        topText.hidden = true
+        bottomText.hidden = true
+        
+        lblInstructions.hidden = false
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -78,12 +84,10 @@ class ViewController : UIViewController, UIImagePickerControllerDelegate, UINavi
         avc.completionWithItemsHandler = {activityType, completed, returnedItems, error in
             if completed{
             self.save(memedImage)
-            self.dismissViewControllerAnimated(true, completion: nil)
-            self.showEntryPoint()
+            self.dismissViewControllerAnimated(true, completion: nil) // dismiss the modal view controller and return to the presenter
             }
         }
         self.presentViewController(avc, animated: true, completion: nil)
-        
     }
     
     @IBAction func pickAnImageFromCamera(sender: AnyObject) {
@@ -95,16 +99,14 @@ class ViewController : UIViewController, UIImagePickerControllerDelegate, UINavi
         
     }
     
-    func showEntryPoint(){
-                let editController = self.storyboard!.instantiateViewControllerWithIdentifier("EntryPointViewController") as! UITabBarController
-        self.presentViewController(editController, animated: true, completion: nil)
-    }
-    
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [NSObject : AnyObject]){
         //didFinishPickingMediaWithInfo is the external name
         if let image = info[UIImagePickerControllerOriginalImage] as? UIImage{
             imageView.image = image
             shareButton.enabled = true
+            topText.hidden = false
+            bottomText.hidden = false
+            lblInstructions.hidden = true
         }
         self.dismissViewControllerAnimated(true, completion: nil)
     }
@@ -154,7 +156,10 @@ class ViewController : UIViewController, UIImagePickerControllerDelegate, UINavi
     func save(memedImage:UIImage) {
         //Create the meme
         var meme = Meme(topString: topText.text, bottomString: bottomText.text, originalImage: imageView.image!, memedImage: memedImage)
-        (UIApplication.sharedApplication().delegate as! AppDelegate).memes.append(meme)
+        
+        ((UIApplication.sharedApplication().delegate) as! AppDelegate).memes.append(meme)
+        println(String(((UIApplication.sharedApplication().delegate) as! AppDelegate).memes.count) + " items in memes")
+        
         println("saving the meme")
     }
     
@@ -165,8 +170,7 @@ class ViewController : UIViewController, UIImagePickerControllerDelegate, UINavi
         
         // Render view to an image
         UIGraphicsBeginImageContext(self.view.frame.size)
-        self.view.drawViewHierarchyInRect(self.view.frame,
-            afterScreenUpdates: true)
+        self.view.drawViewHierarchyInRect(self.view.frame, afterScreenUpdates: true)
         let memedImage : UIImage =
         UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()

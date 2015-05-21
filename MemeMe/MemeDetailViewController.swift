@@ -13,12 +13,13 @@ class MemeDetailViewController: UIViewController {
     @IBOutlet weak var imageView: UIImageView!
     var meme:Meme?
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        self.tabBarController?.tabBar.hidden = true
         if let m = meme {
             imageView.image = m.memedImage
         }
-                // Do any additional setup after loading the view.
     }
 
     override func didReceiveMemoryWarning() {
@@ -26,15 +27,27 @@ class MemeDetailViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    //from http://stackoverflow.com/questions/26273672/how-to-hide-status-bar-and-navigation-bar-when-tap-device
+    //and http://stackoverflow.com/questions/3775577/uiimageview-touch-event
+    
+    override func touchesEnded(touches: Set<NSObject>, withEvent event: UIEvent) {
+        let touch: UITouch? = touches.first as? UITouch
+        
+        if (touch?.view == imageView) {
+            toggle()
+        }
     }
-    */
+    
+    func toggle() {
+        navigationController?.setNavigationBarHidden(navigationController?.navigationBarHidden == false, animated: true) //or animated: false
+    }
+    
+    override func prefersStatusBarHidden() -> Bool {
+        return navigationController?.navigationBarHidden == true
+    }
+    
+    override func preferredStatusBarUpdateAnimation() -> UIStatusBarAnimation {
+        return UIStatusBarAnimation.Fade
+    }
 
 }

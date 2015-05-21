@@ -8,51 +8,56 @@
 
 import UIKit
 
-    class SavedMemesTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class SavedMemesTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+    
+
+    @IBAction func addMeme(sender: AnyObject) {
+        let editController = self.storyboard!.instantiateViewControllerWithIdentifier("MemeEditViewController") as! ViewController
+        self.presentViewController(editController, animated: true, completion: nil)
+    }
+    @IBOutlet weak var tableViewOutlet: UITableView!
+
+    // MARK: Table View Data Source
+    
+    var memes: [Meme]!
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
         
-        // Get ahold of some villains, for the table
-        // This is an array of Villain instances
+        let object = UIApplication.sharedApplication().delegate
+        let appDelegate = object as! AppDelegate
+        memes = appDelegate.memes
+        self.tabBarController?.tabBar.hidden = false
+        tableViewOutlet.reloadData()
+    }
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return memes.count
+    }
+    
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
-        // MARK: Table View Data Source
+        let cell = tableView.dequeueReusableCellWithIdentifier("MemeCell") as! UITableViewCell
+        let meme = self.memes[indexPath.row]
         
-        var memes: [Meme]!
+        // Set the name and image
+        cell.textLabel?.text = meme.topString
+        cell.imageView?.image = meme.memedImage
         
-        override func viewWillAppear(animated: Bool) {
-            super.viewWillAppear(animated)
-            
-            let object = UIApplication.sharedApplication().delegate
-            let appDelegate = object as! AppDelegate
-            memes = appDelegate.memes
+        // If the cell has a detail label, we will put the evil scheme in.
+        if let detailTextLabel = cell.detailTextLabel {
+            detailTextLabel.text = meme.bottomString
         }
         
+        return cell
+    }
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
-        func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-            return memes.count
-        }
+        let detailController = self.storyboard!.instantiateViewControllerWithIdentifier("MemeDetailViewController") as! MemeDetailViewController
+        detailController.meme = self.memes[indexPath.row]
+        self.navigationController!.pushViewController(detailController, animated: true)
         
-        func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-            
-            let cell = tableView.dequeueReusableCellWithIdentifier("MemeCell") as! UITableViewCell
-            let meme = self.memes[indexPath.row]
-            
-            // Set the name and image
-            cell.textLabel?.text = meme.topString
-            cell.imageView?.image = meme.memedImage
-            
-            // If the cell has a detail label, we will put the evil scheme in.
-            if let detailTextLabel = cell.detailTextLabel {
-                detailTextLabel.text = meme.bottomString
-            }
-            
-            return cell
-        }
-        
-        func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-            
-            let detailController = self.storyboard!.instantiateViewControllerWithIdentifier("MemeDetailViewController") as! MemeDetailViewController
-            detailController.meme = self.memes[indexPath.row]
-            self.navigationController!.pushViewController(detailController, animated: true)
-            
-        }
+    }
         
 }
