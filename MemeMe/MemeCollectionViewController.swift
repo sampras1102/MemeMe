@@ -30,15 +30,16 @@ class MemeCollectionViewController: UIViewController, UICollectionViewDataSource
 
         self.collectionView.reloadData()
         self.tabBarController?.tabBar.hidden = false
-
-        var numCellsAcross = min(memes.count, numCells)
-        numCellsAcross = max(numCellsAcross,1)
+        var spacing = CGFloat(5.0)
+        var nItemsAcross = 3
+        var cellSize = (self.view.bounds.width - (CGFloat(nItemsAcross) + 1)*spacing)/CGFloat(nItemsAcross)
         
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        layout.itemSize = CGSize(width: self.view.bounds.width/CGFloat(numCellsAcross), height: self.view.bounds.width/CGFloat(numCellsAcross))
+        layout.sectionInset = UIEdgeInsets(top: spacing, left: spacing, bottom: spacing, right: spacing)
+        layout.itemSize = CGSize(width: cellSize, height: cellSize)
         layout.minimumInteritemSpacing = 0
         layout.minimumLineSpacing = 0
+        self.collectionView.collectionViewLayout = layout
     }
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
