@@ -56,6 +56,10 @@ class ViewController : UIViewController, UIImagePickerControllerDelegate, UINavi
         // Dispose of any resources that can be recreated.
     }
     
+    //TODO: Implement cancel button
+    //TODO: Hide buttons on top
+    //TODO: Add instructions when loading app
+    
     func setTextBoxProps(tb: UITextField, initText: String){
         //tb.placeholder = initText //not sure if we are supposed to use a placeholder
         tb.text = initText
@@ -78,6 +82,10 @@ class ViewController : UIViewController, UIImagePickerControllerDelegate, UINavi
         self.presentViewController(pickerControl, animated: true, completion: nil)
     }
     
+    @IBAction func cancel(sender: AnyObject) {
+        self.dismissViewControllerAnimated(true, completion: nil) // dismiss the modal view controller and return to the presenter
+    }
+
     @IBAction func share(sender: AnyObject) {
         var memedImage = generateMemedImage()
         var avc = UIActivityViewController(activityItems: [memedImage], applicationActivities: nil)

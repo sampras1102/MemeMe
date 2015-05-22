@@ -27,6 +27,7 @@ class SavedMemesTableViewController: UIViewController, UITableViewDataSource, UI
         let object = UIApplication.sharedApplication().delegate
         let appDelegate = object as! AppDelegate
         memes = appDelegate.memes
+        tableViewOutlet.hidden = (memes.count == 0)
         self.tabBarController?.tabBar.hidden = false
         tableViewOutlet.reloadData()
     }

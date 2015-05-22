@@ -10,6 +10,7 @@ import UIKit
 
 class MemeCollectionViewController: UIViewController, UICollectionViewDataSource {
         
+    @IBOutlet weak var instructions: UILabel!
     @IBOutlet weak var collectionView: UICollectionView!
     let numCells = 3
     @IBAction func addMeme(sender: AnyObject) {
@@ -25,6 +26,8 @@ class MemeCollectionViewController: UIViewController, UICollectionViewDataSource
         let object = UIApplication.sharedApplication().delegate
         let appDelegate = object as! AppDelegate
         memes = appDelegate.memes
+        instructions.hidden = (memes.count != 0)
+
         self.collectionView.reloadData()
         self.tabBarController?.tabBar.hidden = false
 
