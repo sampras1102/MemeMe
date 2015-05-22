@@ -10,15 +10,15 @@ import UIKit
 
 class MemeCollectionViewController: UIViewController, UICollectionViewDataSource {
         
-    @IBOutlet weak var instructions: UILabel!
+    var instructions: UILabel!
     @IBOutlet weak var collectionView: UICollectionView!
-    let numCells = 3
-    @IBAction func addMeme(sender: AnyObject) {
-        
-        let editController = self.storyboard!.instantiateViewControllerWithIdentifier("MemeEditViewController") as! ViewController
-        self.presentViewController(editController, animated: true, completion: nil)
-    }
+
     var memes: [Meme]!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        instructions = InstructionLabelUtils.createLabelInViewController(self, text: "Press the + button to add a meme")
+    }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
@@ -26,8 +26,7 @@ class MemeCollectionViewController: UIViewController, UICollectionViewDataSource
         let object = UIApplication.sharedApplication().delegate
         let appDelegate = object as! AppDelegate
         memes = appDelegate.memes
-        instructions.hidden = (memes.count != 0)
-
+        
         self.collectionView.reloadData()
         self.tabBarController?.tabBar.hidden = false
         var spacing = CGFloat(5.0)
@@ -40,6 +39,16 @@ class MemeCollectionViewController: UIViewController, UICollectionViewDataSource
         layout.minimumInteritemSpacing = 0
         layout.minimumLineSpacing = 0
         self.collectionView.collectionViewLayout = layout
+        self.collectionView.sendSubviewToBack(self.view)
+        
+        InstructionLabelUtils.centerLabelInViewFrame(instructions)
+        instructions.hidden = (memes.count != 0)
+    }
+    
+    @IBAction func addMeme(sender: AnyObject) {
+        
+        let editController = self.storyboard!.instantiateViewControllerWithIdentifier("MemeEditViewController") as! ViewController
+        self.presentViewController(editController, animated: true, completion: nil)
     }
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {

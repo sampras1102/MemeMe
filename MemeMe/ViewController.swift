@@ -10,15 +10,14 @@ import UIKit
 
 class ViewController : UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
-    @IBOutlet weak var topText: UITextField!
-    @IBOutlet weak var bottomText: UITextField!
+    var topText = UITextField()
+    var bottomText = UITextField()
     @IBOutlet weak var cameraButton: UIBarButtonItem!
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var toolbar: UIToolbar!
     @IBOutlet weak var navigationBar: UINavigationBar!
     @IBOutlet weak var shareButton: UIBarButtonItem!
-    @IBOutlet weak var lblInstructions: UILabel!
-    
+    var instructions: UILabel!
     
     var topDel = MemeTextFieldDelegate(initialText: "TOP") //can't use a constant to define initial text because I am instantiating the object here
     
@@ -27,6 +26,7 @@ class ViewController : UIViewController, UIImagePickerControllerDelegate, UINavi
     override func viewDidLoad() {
         super.viewDidLoad()
         shareButton.enabled = false
+        instructions = InstructionLabelUtils.createLabelInViewController(self, text:"Take a picture or load an image to create a meme")
         //TODO: Make sure I am handling the optionals in an acceptable way
         topText.delegate = topDel
         bottomText.delegate = bottomDel
@@ -35,13 +35,13 @@ class ViewController : UIViewController, UIImagePickerControllerDelegate, UINavi
         topText.hidden = true
         bottomText.hidden = true
         
-        lblInstructions.hidden = false
+        instructions.hidden = false
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         cameraButton.enabled = UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.Camera)
-        
+        InstructionLabelUtils.centerLabelInViewFrame(instructions)
         // Subscribe to keyboard notifications to allow the view to raise when necessary
         self.subscribeToKeyboardNotifications()
     }
@@ -49,6 +49,10 @@ class ViewController : UIViewController, UIImagePickerControllerDelegate, UINavi
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
         self.unsubscribeFromKeyboardNotifications()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        setTextBoxPosition()
     }
 
     override func didReceiveMemoryWarning() {
@@ -62,6 +66,7 @@ class ViewController : UIViewController, UIImagePickerControllerDelegate, UINavi
     
     func setTextBoxProps(tb: UITextField, initText: String){
         //tb.placeholder = initText //not sure if we are supposed to use a placeholder
+        self.view.addSubview(tb)
         tb.text = initText
         
         let memeTextAttributes = [
@@ -71,7 +76,24 @@ class ViewController : UIViewController, UIImagePickerControllerDelegate, UINavi
             NSStrokeWidthAttributeName : -3.0
         ]
         tb.defaultTextAttributes = memeTextAttributes
+        tb.autocapitalizationType = UITextAutocapitalizationType.Words
         tb.textAlignment = NSTextAlignment.Center //set this after the defaultTextAttributes
+        tb.adjustsFontSizeToFitWidth = true
+        
+    }
+    
+    func setTextBoxPosition(){
+        if let i = imageView.image{
+            let imageFrame = frameForImage(i)
+            topText.layer.zPosition = 1000
+            bottomText.layer.zPosition = 1000
+            
+            var frameSize = topText.superview?.frame
+            topText.frame = CGRect(x:0,y:0,width:imageFrame.width, height: 50)
+            bottomText.frame = CGRect(x:0,y:0,width:imageFrame.width, height: 50)
+            topText.center = CGPointMake(frameSize!.width/2.0, imageFrame.origin.y + 0.25*imageFrame.height)
+            bottomText.center = CGPointMake(frameSize!.width/2.0, imageFrame.origin.y + 0.75*imageFrame.height)
+        }
     }
 
     @IBAction func pickAnImage(sender: AnyObject) {
@@ -114,7 +136,8 @@ class ViewController : UIViewController, UIImagePickerControllerDelegate, UINavi
             shareButton.enabled = true
             topText.hidden = false
             bottomText.hidden = false
-            lblInstructions.hidden = true
+            instructions.hidden = true
+            setTextBoxPosition()
         }
         self.dismissViewControllerAnimated(true, completion: nil)
     }
@@ -175,18 +198,68 @@ class ViewController : UIViewController, UIImagePickerControllerDelegate, UINavi
         
         toolbar.hidden = true
         navigationBar.hidden = true
-        
+        //from: http://stackoverflow.com/questions/12687909/ios-screenshot-part-of-the-screen
         // Render view to an image
-        UIGraphicsBeginImageContext(self.view.frame.size)
+//        let imageFrame = frameForImage(imageView.image!)
+
+//        UIGraphicsBeginImageContext(imageFrame.size) //self.view.frame.size)
+//        self.view.drawViewHierarchyInRect(imageFrame, afterScreenUpdates: true)   //self.view.frame, afterScreenUpdates: true)
+//        let memedImage : UIImage =
+//        UIGraphicsGetImageFromCurrentImageContext()
+//        UIGraphicsEndImageContext()
+        
+        let imageFrame = frameForImage(imageView.image!)
+        println("imageFrame \(imageFrame)")
+        println("self.view.frame \(self.view.frame)")
+        
+        //first we will make an UIImage from your view
+        UIGraphicsBeginImageContext(self.view.bounds.size);
+        //self.view.layer.renderInContext(UIGraphicsGetCurrentContext());
         self.view.drawViewHierarchyInRect(self.view.frame, afterScreenUpdates: true)
-        let memedImage : UIImage =
-        UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
+        var sourceImage = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        
+        //now we will position the image, X/Y away from top left corner to get the portion we want
+        UIGraphicsBeginImageContext(imageFrame.size)
+        sourceImage.drawAtPoint(CGPoint(x: 0, y: -imageFrame.origin.y))
+        var memedImage = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        UIImageWriteToSavedPhotosAlbum(memedImage,nil, nil, nil);
         
         toolbar.hidden = false
         navigationBar.hidden = false
         
         return memedImage
     }
+    
+    //from: http://stackoverflow.com/questions/389342/how-to-get-the-size-of-a-scaled-uiimage-in-uiimageview/4987554#4987554
+    func frameForImage(image: UIImage) -> CGRect {
+        var imageRatio = CGFloat(image.size.width / image.size.height)
+        var scale:CGFloat = 0
+        var width:CGFloat = 0
+        var height:CGFloat = 0
+        var topLeftX:CGFloat = 0
+        var topLeftY:CGFloat = 0
+        
+        var viewRatio = CGFloat(imageView.frame.size.width / imageView.frame.size.height)
+        
+        if(imageRatio < viewRatio)
+        {
+            scale = CGFloat(imageView.frame.size.height / image.size.height)
+            width = CGFloat(scale * image.size.width)
+            topLeftX = CGFloat((imageView.frame.size.width - width) * 0.5);
+            
+            return CGRect(x: topLeftX, y: 0, width: width, height: imageView.frame.size.height);
+        }
+        else
+        {
+            scale = imageView.frame.size.width / image.size.width
+            height = scale * image.size.height
+            topLeftY = (imageView.frame.size.height - height) * 0.5;
+            
+            return CGRect(x: 0, y: topLeftY, width: imageView.frame.size.width, height: height);
+        }
+    }
+
 }
 

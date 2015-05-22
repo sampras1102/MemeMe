@@ -10,6 +10,7 @@ import UIKit
 
 class SavedMemesTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
+    var instructions: UILabel!
 
     @IBAction func addMeme(sender: AnyObject) {
         let editController = self.storyboard!.instantiateViewControllerWithIdentifier("MemeEditViewController") as! ViewController
@@ -21,12 +22,19 @@ class SavedMemesTableViewController: UIViewController, UITableViewDataSource, UI
     
     var memes: [Meme]!
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        instructions = InstructionLabelUtils.createLabelInViewController(self, text: "Press the + button to add a meme")
+    }
+    
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
         let object = UIApplication.sharedApplication().delegate
         let appDelegate = object as! AppDelegate
         memes = appDelegate.memes
+        InstructionLabelUtils.centerLabelInViewFrame(instructions)
+        instructions.hidden = (memes.count != 0)
         tableViewOutlet.hidden = (memes.count == 0)
         self.tabBarController?.tabBar.hidden = false
         tableViewOutlet.reloadData()
