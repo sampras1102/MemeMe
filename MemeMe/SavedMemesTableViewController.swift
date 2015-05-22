@@ -27,13 +27,18 @@ class SavedMemesTableViewController: UIViewController, UITableViewDataSource, UI
         instructions = InstructionLabelUtils.createLabelInViewController(self, text: "Press the + button to add a meme")
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        InstructionLabelUtils.centerLabelInViewFrame(instructions)
+    }
+    
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
         let object = UIApplication.sharedApplication().delegate
         let appDelegate = object as! AppDelegate
         memes = appDelegate.memes
-        InstructionLabelUtils.centerLabelInViewFrame(instructions)
+
         instructions.hidden = (memes.count != 0)
         tableViewOutlet.hidden = (memes.count == 0)
         self.tabBarController?.tabBar.hidden = false
@@ -50,7 +55,7 @@ class SavedMemesTableViewController: UIViewController, UITableViewDataSource, UI
         let meme = self.memes[indexPath.row]
         
         // Set the name and image
-        cell.textLabel?.text = meme.topString
+        cell.textLabel?.text = meme.topString + " " + meme.bottomString
         cell.imageView?.image = meme.memedImage
         
         // If the cell has a detail label, we will put the evil scheme in.

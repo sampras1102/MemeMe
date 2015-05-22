@@ -43,7 +43,7 @@
             </objects>
             <point key="canvasLocation" x="-1086" y="-1189"/>
         </scene>
-        <!--Meme-->
+        <!--Sent Memes-->
         <scene sceneID="Cgi-iu-gMC">
             <objects>
                 <viewController storyboardIdentifier="SavedMemesTableViewController" id="nCI-5D-Cjw" customClass="SavedMemesTableViewController" customModule="MemeMe" customModuleProvider="target" sceneMemberID="viewController">
@@ -102,7 +102,7 @@
                             </mask>
                         </variation>
                     </view>
-                    <navigationItem key="navigationItem" title="Meme" id="O57-PB-n2a">
+                    <navigationItem key="navigationItem" title="Sent Memes" id="O57-PB-n2a">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="WmQ-F4-ZgY">
                             <connections>
                                 <action selector="addMeme:" destination="nCI-5D-Cjw" id="ovW-Oa-qMm"/>
@@ -134,7 +134,7 @@
             </objects>
             <point key="canvasLocation" x="-1086" y="-1947"/>
         </scene>
-        <!--Meme-->
+        <!--Sent Memes-->
         <scene sceneID="Qx0-XG-SLD">
             <objects>
                 <viewController automaticallyAdjustsScrollViewInsets="NO" id="cSJ-fu-boo" customClass="MemeCollectionViewController" customModule="MemeMe" customModuleProvider="target" sceneMemberID="viewController">
@@ -250,7 +250,7 @@
                             </mask>
                         </variation>
                     </view>
-                    <navigationItem key="navigationItem" title="Meme" id="4RQ-jR-zIi">
+                    <navigationItem key="navigationItem" title="Sent Memes" id="4RQ-jR-zIi">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="vuy-Qq-3Op">
                             <connections>
                                 <action selector="addMeme:" destination="cSJ-fu-boo" id="QUl-UG-3n6"/>

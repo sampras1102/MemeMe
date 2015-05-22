@@ -11,6 +11,7 @@ import UIKit
 
 class InstructionLabelUtils
 {
+    //TODO: Implement this as a new ViewController class and make the collection and table views inherit from this instead of UIViewController.  It will be much cleaner that way and I can also ensure that it gets re-laid out upon rotation
     class func createLabelInViewController(view: UIViewController, text: String) -> UILabel
     {
         var label = UILabel()

@@ -29,6 +29,11 @@ class MemeCollectionViewController: UIViewController, UICollectionViewDataSource
         
         self.collectionView.reloadData()
         self.tabBarController?.tabBar.hidden = false
+
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
         var spacing = CGFloat(5.0)
         var nItemsAcross = 3
         var cellSize = (self.view.bounds.width - (CGFloat(nItemsAcross) + 1)*spacing)/CGFloat(nItemsAcross)

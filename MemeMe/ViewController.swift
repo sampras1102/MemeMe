@@ -41,7 +41,6 @@ class ViewController : UIViewController, UIImagePickerControllerDelegate, UINavi
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         cameraButton.enabled = UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.Camera)
-        InstructionLabelUtils.centerLabelInViewFrame(instructions)
         // Subscribe to keyboard notifications to allow the view to raise when necessary
         self.subscribeToKeyboardNotifications()
     }
@@ -52,7 +51,10 @@ class ViewController : UIViewController, UIImagePickerControllerDelegate, UINavi
     }
     
     override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        // call any manual layout functions here
         setTextBoxPosition()
+        InstructionLabelUtils.centerLabelInViewFrame(instructions)
     }
 
     override func didReceiveMemoryWarning() {
@@ -117,8 +119,34 @@ class ViewController : UIViewController, UIImagePickerControllerDelegate, UINavi
             self.dismissViewControllerAnimated(true, completion: nil) // dismiss the modal view controller and return to the presenter
             }
         }
-        self.presentViewController(avc, animated: true, completion: nil)
+        //I don't think I need this...it does nothing even when running this on an ipad
+        //from: http://stackoverflow.com/questions/13433718/uiactivity-activityviewcontroller-being-presented-modally-on-ipad-instead-of-in
+        if (false){ // (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiom.Phone) {
+            self.presentViewController(avc, animated: true, completion: nil)
+        }
+        else{
+//            //from: http://stackoverflow.com/questions/28759365/uiactivity-activityviewcontroller-crash-on-ipad-in-swift
+//            var nav = UINavigationController(rootViewController: avc)
+//            nav.modalPresentationStyle = UIModalPresentationStyle.Popover
+//            var popover = nav.popoverPresentationController as UIPopoverPresentationController!
+//            avc.preferredContentSize = CGSizeMake(300,300)
+//            popover.sourceView = self.view
+//            popover.sourceRect = CGRectMake(100,100,0,0)
+//            
+//            self.presentViewController(nav, animated: true, completion: nil)
+        
+        //from: http://stackoverflow.com/questions/25644054/uiactivityviewcontroller-crashing-on-ios8-ipads
+            if let ppc = avc.popoverPresentationController {
+                ppc.sourceView = self.view;
+                var frame = UIScreen.mainScreen().bounds;
+                frame.size = CGSizeMake(frame.width, frame.height/CGFloat(2))
+                ppc.sourceRect = frame;
+            }
+            self.presentViewController(avc, animated: true, completion: nil)
+        }
     }
+    
+
     
     @IBAction func pickAnImageFromCamera(sender: AnyObject) {
         println("in pick an image")
@@ -224,7 +252,7 @@ class ViewController : UIViewController, UIImagePickerControllerDelegate, UINavi
         sourceImage.drawAtPoint(CGPoint(x: 0, y: -imageFrame.origin.y))
         var memedImage = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext();
-        UIImageWriteToSavedPhotosAlbum(memedImage,nil, nil, nil);
+        //UIImageWriteToSavedPhotosAlbum(memedImage,nil, nil, nil);
         
         toolbar.hidden = false
         navigationBar.hidden = false
