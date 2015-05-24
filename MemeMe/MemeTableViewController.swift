@@ -72,7 +72,7 @@ class SavedMemesTableViewController: UIViewControllerWithCenterInstructionLabel,
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
         let detailController = self.storyboard!.instantiateViewControllerWithIdentifier("MemeDetailViewController") as! MemeDetailViewController
-        detailController.existingIndex = indexPath.row
+        detailController.index = indexPath.row
         self.navigationController!.pushViewController(detailController, animated: true)
         
     }

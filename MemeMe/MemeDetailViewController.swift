@@ -11,13 +11,15 @@ import UIKit
 class MemeDetailViewController: UIViewController {
     
     @IBOutlet weak var imageView: UIImageView!
-    //var meme:Meme?
-    var existingIndex:Int?
+    @IBOutlet weak var toolbar: UIToolbar!
+    
+    var index:Int?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         //add nav bar button
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Edit, target: self, action: "edit")
+        //self.navigationController?.hidesBarsOnTap = true //this is simple but it hides them everywhere, which I don't want
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -25,10 +27,13 @@ class MemeDetailViewController: UIViewController {
         
         self.tabBarController?.tabBar.hidden = true
 
-        if let i = existingIndex{
+        if let i = index{
             println("setting meme")
             imageView.image = ((UIApplication.sharedApplication().delegate) as! AppDelegate).memes[i].memedImage
         }
+        //make sure the bars are always visible when the view initially appears
+        navigationController?.setNavigationBarHidden(false, animated:false)
+        toolbar.hidden = false
     }
 
     override func didReceiveMemoryWarning() {
@@ -36,31 +41,40 @@ class MemeDetailViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    @IBAction func deleteMeme(sender: AnyObject) {
+        if let i = index{
+            ((UIApplication.sharedApplication().delegate) as! AppDelegate).memes.removeAtIndex(i)
+            self.navigationController?.popToRootViewControllerAnimated(true)
+        }
+    }
+    
+    func edit() {
+        
+        let editController = self.storyboard!.instantiateViewControllerWithIdentifier("MemeEditViewController") as! ViewController
+        if let i = index{
+            editController.existingMeme = ((UIApplication.sharedApplication().delegate) as! AppDelegate).memes[i]
+            editController.existingMemeIndex = i
+        }
+        self.presentViewController(editController, animated: true, completion: nil)
+        
+    }
+    
     //from http://stackoverflow.com/questions/26273672/how-to-hide-status-bar-and-navigation-bar-when-tap-device
     //and http://stackoverflow.com/questions/3775577/uiimageview-touch-event
     
     override func touchesEnded(touches: Set<NSObject>, withEvent event: UIEvent) {
+        println("touches ended")
         let touch: UITouch? = touches.first as? UITouch
-        
-        if (touch?.view == imageView) {
+        var v = touch?.view
+        if (touch?.view == imageView || touch?.view == imageView.superview) {
             toggle()
         }
     }
     
-    
-    func edit() {
-
-        let editController = self.storyboard!.instantiateViewControllerWithIdentifier("MemeEditViewController") as! ViewController
-            if let i = existingIndex{
-                editController.existingMeme = ((UIApplication.sharedApplication().delegate) as! AppDelegate).memes[i]
-                editController.existingMemeIndex = i
-            }
-            self.presentViewController(editController, animated: true, completion: nil)
-
-    }
-    
     func toggle() {
+        println("in toggle")
         navigationController?.setNavigationBarHidden(navigationController?.navigationBarHidden == false, animated: true) //or animated: false
+        toolbar.hidden = (toolbar.hidden == false)
     }
     
     override func prefersStatusBarHidden() -> Bool {

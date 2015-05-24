@@ -24,7 +24,7 @@ class MemeTextField: UITextField{
             NSStrokeWidthAttributeName : -3.0
         ]
         self.defaultTextAttributes = memeTextAttributes
-        self.autocapitalizationType = UITextAutocapitalizationType.Words
+        self.autocapitalizationType = UITextAutocapitalizationType.AllCharacters
         self.textAlignment = NSTextAlignment.Center //set this after the defaultTextAttributes
         self.adjustsFontSizeToFitWidth = true
     }
