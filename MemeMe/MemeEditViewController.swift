@@ -8,31 +8,28 @@
 
 import UIKit
 
-class ViewController : UIViewControllerWithCenterInstructionLabel, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class ViewController : UIViewControllerWithCenterInstructionLabel, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate {
 
-    var topText = UITextField()
-    var bottomText = UITextField()
-    var existingIndex = -1
+    var topText = MemeTextField(initialText: "TOP")
+    var bottomText = MemeTextField(initialText: "BOTTOM")
+    var existingMemeIndex = -1
     var existingMeme:Meme?
+    
     @IBOutlet weak var cameraButton: UIBarButtonItem!
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var toolbar: UIToolbar!
     @IBOutlet weak var navigationBar: UINavigationBar!
     @IBOutlet weak var shareButton: UIBarButtonItem!
-    
-    var topDel = MemeTextFieldDelegate(initialText: "TOP") //can't use a constant to define initial text because I am instantiating the object here
-    
-    var bottomDel = MemeTextFieldDelegate(initialText: "BOTTOM")
 
     override func viewDidLoad() {
         super.viewDidLoad()
         shareButton.enabled = false
         instructionLabel = CenteredInstructionUILabel(superview: self.view, text: "Take a picture or load an image to create a meme")
         //TODO: Make sure I am handling the optionals in an acceptable way
-        topText.delegate = topDel
-        bottomText.delegate = bottomDel
-        setTextBoxProps(topText, initText: topDel.initText)
-        setTextBoxProps(bottomText, initText: bottomDel.initText)
+        self.view.addSubview(topText)
+        self.view.addSubview(bottomText)
+        topText.delegate = self
+        bottomText.delegate = self
         topText.hidden = true
         bottomText.hidden = true
         
@@ -83,24 +80,6 @@ class ViewController : UIViewControllerWithCenterInstructionLabel, UIImagePicker
     //TODO: Implement cancel button
     //TODO: Hide buttons on top
     //TODO: Add instructions when loading app
-    
-    func setTextBoxProps(tb: UITextField, initText: String){
-        //tb.placeholder = initText //not sure if we are supposed to use a placeholder
-        self.view.addSubview(tb)
-        tb.text = initText
-        
-        let memeTextAttributes = [
-            NSStrokeColorAttributeName : UIColor.blackColor(),
-            NSForegroundColorAttributeName : UIColor.whiteColor(),
-            NSFontAttributeName : UIFont(name: "HelveticaNeue-CondensedBlack", size: 40)!,
-            NSStrokeWidthAttributeName : -3.0
-        ]
-        tb.defaultTextAttributes = memeTextAttributes
-        tb.autocapitalizationType = UITextAutocapitalizationType.Words
-        tb.textAlignment = NSTextAlignment.Center //set this after the defaultTextAttributes
-        tb.adjustsFontSizeToFitWidth = true
-        
-    }
     
     func setTextBoxPosition(){
         if let i = imageView.image{
@@ -203,19 +182,16 @@ class ViewController : UIViewControllerWithCenterInstructionLabel, UIImagePicker
     }
     
     func save(memedImage:UIImage) {
-        if existingIndex > -1{
-            //TODO: Changed Meme to class but not sure if this is working correctly.  Thought the changes would automatically save, but they aren't.  Maybe just receive an index from the detail view and then edit that object directly
-            existingMeme?.topString = topText.text
-            existingMeme?.bottomString = bottomText.text
-            existingMeme?.originalImage = imageView.image!
-            existingMeme?.memedImage = memedImage
+        var meme = Meme(topString: topText.text, bottomString: bottomText.text, originalImage: imageView.image!, memedImage: memedImage)
+        var appDel = (UIApplication.sharedApplication().delegate) as! AppDelegate
+        if existingMemeIndex > -1{
+            //replace the current saved meme with the edited version
+            appDel.memes[existingMemeIndex] = meme
         }
         else{
             //Create the meme
-            var meme = Meme(topString: topText.text, bottomString: bottomText.text, originalImage: imageView.image!, memedImage: memedImage)
-            
-            ((UIApplication.sharedApplication().delegate) as! AppDelegate).memes.append(meme)
-            println(String(((UIApplication.sharedApplication().delegate) as! AppDelegate).memes.count) + " items in memes")
+            appDel.memes.append(meme)
+            println("num saved memes: \(((UIApplication.sharedApplication().delegate) as! AppDelegate).memes.count)")
         }
         println("saving the meme")
     }
@@ -224,20 +200,13 @@ class ViewController : UIViewControllerWithCenterInstructionLabel, UIImagePicker
         
         toolbar.hidden = true
         navigationBar.hidden = true
-        //from: http://stackoverflow.com/questions/12687909/ios-screenshot-part-of-the-screen
-        // Render view to an image
-//        let imageFrame = frameForImage(imageView.image!)
-
-//        UIGraphicsBeginImageContext(imageFrame.size) //self.view.frame.size)
-//        self.view.drawViewHierarchyInRect(imageFrame, afterScreenUpdates: true)   //self.view.frame, afterScreenUpdates: true)
-//        let memedImage : UIImage =
-//        UIGraphicsGetImageFromCurrentImageContext()
-//        UIGraphicsEndImageContext()
         
         let imageFrame = frameForImage(imageView.image!)
         println("imageFrame \(imageFrame)")
         println("self.view.frame \(self.view.frame)")
         
+        //from: http://stackoverflow.com/questions/12687909/ios-screenshot-part-of-the-screen
+        // Render view to an image
         //first we will make an UIImage from your view
         UIGraphicsBeginImageContext(self.view.bounds.size);
         //self.view.layer.renderInContext(UIGraphicsGetCurrentContext());
@@ -285,6 +254,29 @@ class ViewController : UIViewControllerWithCenterInstructionLabel, UIImagePicker
             
             return CGRect(x: 0, y: topLeftY, width: imageView.frame.size.width, height: height);
         }
+    }
+    
+    func textFieldDidEndEditing(textField: UITextField) {
+        if let t = textField as? MemeTextField{
+            if (t.text == ""){
+                t.text = t.initialText
+            }
+        }
+    }
+    
+    func textFieldDidBeginEditing(textField: UITextField){
+        println("begin editing")
+        if let t = textField as? MemeTextField{
+            println("after optional unwrapping")
+            if (t.text == t.initialText){
+                t.text = ""
+            }
+        }
+    }
+    
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true;
     }
 
 }

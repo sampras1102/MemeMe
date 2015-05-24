@@ -11,7 +11,7 @@ import UIKit
 class MemeDetailViewController: UIViewController {
     
     @IBOutlet weak var imageView: UIImageView!
-    var meme:Meme?
+    //var meme:Meme?
     var existingIndex:Int?
 
     override func viewDidLoad() {
@@ -24,8 +24,10 @@ class MemeDetailViewController: UIViewController {
         super.viewWillAppear(animated)
         
         self.tabBarController?.tabBar.hidden = true
-        if let m = meme {
-            imageView.image = m.memedImage
+
+        if let i = existingIndex{
+            println("setting meme")
+            imageView.image = ((UIApplication.sharedApplication().delegate) as! AppDelegate).memes[i].memedImage
         }
     }
 
@@ -49,11 +51,11 @@ class MemeDetailViewController: UIViewController {
     func edit() {
 
         let editController = self.storyboard!.instantiateViewControllerWithIdentifier("MemeEditViewController") as! ViewController
-        if let m = self.meme{
-            editController.existingMeme = m
-            editController.existingIndex = existingIndex!
+            if let i = existingIndex{
+                editController.existingMeme = ((UIApplication.sharedApplication().delegate) as! AppDelegate).memes[i]
+                editController.existingMemeIndex = i
+            }
             self.presentViewController(editController, animated: true, completion: nil)
-        }
 
     }
     
