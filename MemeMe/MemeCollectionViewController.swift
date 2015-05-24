@@ -16,7 +16,7 @@ class MemeCollectionViewController: UIViewControllerWithCenterInstructionLabel, 
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        instructionLabel = CenteredInstructionUILabel(superview: self.view, text: "Press the + button to add a meme")
+        instructionLabel = CenteredInstructionUILabel(superview: view, text: "Press the + button to add a meme")
     }
     
     override func hideInstructionLabel() -> Bool {
@@ -28,8 +28,8 @@ class MemeCollectionViewController: UIViewControllerWithCenterInstructionLabel, 
         let appDelegate = object as! AppDelegate
         memes = appDelegate.memes //this needs to happen first.  Call to super.viewWillAppear depends on knowing if there are memes
         
-        self.collectionView.reloadData()
-        self.tabBarController?.tabBar.hidden = false
+        collectionView.reloadData()
+        tabBarController?.tabBar.hidden = false
         
         super.viewWillAppear(animated) //need to call this after memes variable gets updated
     }
@@ -38,31 +38,31 @@ class MemeCollectionViewController: UIViewControllerWithCenterInstructionLabel, 
         super.viewDidLayoutSubviews()
         let spacing = CGFloat(5.0)
         let nItemsAcross = 3
-        let cellSize = (self.view.bounds.width - (CGFloat(nItemsAcross) + 1)*spacing)/CGFloat(nItemsAcross)
+        let cellSize = (view.bounds.width - (CGFloat(nItemsAcross) + 1)*spacing)/CGFloat(nItemsAcross)
         
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
         layout.sectionInset = UIEdgeInsets(top: spacing, left: spacing, bottom: spacing, right: spacing)
         layout.itemSize = CGSize(width: cellSize, height: cellSize)
         layout.minimumInteritemSpacing = 0
         layout.minimumLineSpacing = 0
-        self.collectionView.collectionViewLayout = layout
-        self.collectionView.sendSubviewToBack(self.view)
+        collectionView.collectionViewLayout = layout
+        collectionView.sendSubviewToBack(view)
     }
     
     @IBAction func addMeme(sender: AnyObject) {
-        let editController = self.storyboard!.instantiateViewControllerWithIdentifier("MemeEditViewController") as! ViewController
-        self.presentViewController(editController, animated: true, completion: nil)
+        let editController = storyboard!.instantiateViewControllerWithIdentifier("MemeEditViewController") as! ViewController
+        presentViewController(editController, animated: true, completion: nil)
     }
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.memes.count
+        return memes.count
     }
 
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("MemeCollectionViewCell", forIndexPath: indexPath) as! MemeCollectionViewCell
 
-        let meme = self.memes[indexPath.row]
+        let meme = memes[indexPath.row]
         
         // Set the image
         cell.memeImageView?.image = meme.memedImage
@@ -73,9 +73,9 @@ class MemeCollectionViewController: UIViewControllerWithCenterInstructionLabel, 
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath:NSIndexPath)
     {
         
-        let detailController = self.storyboard!.instantiateViewControllerWithIdentifier("MemeDetailViewController") as! MemeDetailViewController
+        let detailController = storyboard!.instantiateViewControllerWithIdentifier("MemeDetailViewController") as! MemeDetailViewController
         detailController.index = indexPath.row
-        self.navigationController!.pushViewController(detailController, animated: true)
+        navigationController!.pushViewController(detailController, animated: true)
     }
         
 }

@@ -14,13 +14,13 @@ class CenteredInstructionUILabel: UILabel {
         // the point of this subclass is to make a label centered on some superview, so it needs to be initialized with a superview
         super.init(frame: CGRect(x: 0,y: 0,width: 100,height: 50))
         superview.addSubview(self)
-        self.font = UIFont.systemFontOfSize(12)
-        self.adjustsFontSizeToFitWidth = false
-        self.textAlignment = NSTextAlignment.Center
+        font = UIFont.systemFontOfSize(12)
+        adjustsFontSizeToFitWidth = false
+        textAlignment = NSTextAlignment.Center
         self.text = text
-        self.layer.zPosition = 1000
-        self.sizeToFit()
-        self.setTranslatesAutoresizingMaskIntoConstraints(false)
+        layer.zPosition = 1000
+        sizeToFit()
+        setTranslatesAutoresizingMaskIntoConstraints(false)
         
         let xCenterConstraint = NSLayoutConstraint(item: self, attribute: .CenterX, relatedBy: .Equal, toItem: superview, attribute: .CenterX, multiplier: 1, constant: 0)
         superview.addConstraint(xCenterConstraint)

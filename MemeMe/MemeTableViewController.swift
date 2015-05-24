@@ -15,7 +15,7 @@ class SavedMemesTableViewController: UIViewControllerWithCenterInstructionLabel,
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        instructionLabel = CenteredInstructionUILabel(superview: self.view, text: "Press the + button to add a meme")
+        instructionLabel = CenteredInstructionUILabel(superview: view, text: "Press the + button to add a meme")
     }
     
     override func hideInstructionLabel() -> Bool {
@@ -27,7 +27,7 @@ class SavedMemesTableViewController: UIViewControllerWithCenterInstructionLabel,
         let appDelegate = object as! AppDelegate
         memes = appDelegate.memes //this needs to be the first thing that happens
         tableViewOutlet.hidden = (memes?.count == 0)
-        self.tabBarController?.tabBar.hidden = false
+        tabBarController?.tabBar.hidden = false
         tableViewOutlet.reloadData()
         
         super.viewWillAppear(animated) //need to call this after memes variable gets updated
@@ -63,7 +63,7 @@ class SavedMemesTableViewController: UIViewControllerWithCenterInstructionLabel,
     }
     
     @IBAction func addMeme(sender: AnyObject) {
-        let editController = self.storyboard!.instantiateViewControllerWithIdentifier("MemeEditViewController") as! ViewController
+        let editController = storyboard!.instantiateViewControllerWithIdentifier("MemeEditViewController") as! ViewController
         presentViewController(editController, animated: true, completion: nil)
     }
 }

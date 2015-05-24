@@ -18,13 +18,13 @@ class MemeDetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         //add nav bar button for edit action
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Edit, target: self, action: "edit")
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Edit, target: self, action: "edit")
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
-        self.tabBarController?.tabBar.hidden = true
+        tabBarController?.tabBar.hidden = true
 
         if let i = index{
             println("setting meme")
@@ -38,17 +38,17 @@ class MemeDetailViewController: UIViewController {
     @IBAction func deleteMeme(sender: AnyObject) {
         if let i = index{
             ((UIApplication.sharedApplication().delegate) as! AppDelegate).memes.removeAtIndex(i)
-            self.navigationController?.popToRootViewControllerAnimated(true)
+            navigationController?.popToRootViewControllerAnimated(true)
         }
     }
     
     func edit() {
-        let editController = self.storyboard!.instantiateViewControllerWithIdentifier("MemeEditViewController") as! ViewController
+        let editController = storyboard!.instantiateViewControllerWithIdentifier("MemeEditViewController") as! ViewController
         if let i = index{
             editController.existingMeme = ((UIApplication.sharedApplication().delegate) as! AppDelegate).memes[i]
             editController.existingMemeIndex = i
         }
-        self.presentViewController(editController, animated: true, completion: nil)
+        presentViewController(editController, animated: true, completion: nil)
         
     }
     

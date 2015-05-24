@@ -24,10 +24,10 @@ class ViewController : UIViewControllerWithCenterInstructionLabel, UIImagePicker
     override func viewDidLoad() {
         super.viewDidLoad()
         shareButton.enabled = false
-        instructionLabel = CenteredInstructionUILabel(superview: self.view, text: "Take a picture or load an image to create a meme")
+        instructionLabel = CenteredInstructionUILabel(superview: view, text: "Take a picture or load an image to create a meme")
 
-        self.view.addSubview(topText)
-        self.view.addSubview(bottomText)
+        view.addSubview(topText)
+        view.addSubview(bottomText)
         topText.delegate = self
         bottomText.delegate = self
         topText.hidden = true
@@ -44,12 +44,12 @@ class ViewController : UIViewControllerWithCenterInstructionLabel, UIImagePicker
         super.viewWillAppear(animated)
         cameraButton.enabled = UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.Camera)
         // Subscribe to keyboard notifications to allow the view to raise when necessary
-        self.subscribeToKeyboardNotifications()
+        subscribeToKeyboardNotifications()
     }
     
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
-        self.unsubscribeFromKeyboardNotifications()
+        unsubscribeFromKeyboardNotifications()
     }
     
     override func viewDidLayoutSubviews() {
@@ -62,7 +62,7 @@ class ViewController : UIViewControllerWithCenterInstructionLabel, UIImagePicker
         shareButton.enabled = true
         topText.hidden = false
         bottomText.hidden = false
-        if let l = self.instructionLabel{
+        if let l = instructionLabel{
             l.hidden = true
         }
         setTextBoxPosition()
@@ -94,11 +94,11 @@ class ViewController : UIViewControllerWithCenterInstructionLabel, UIImagePicker
         let pickerControl = UIImagePickerController()
         pickerControl.sourceType = UIImagePickerControllerSourceType.PhotoLibrary
         pickerControl.delegate = self
-        self.presentViewController(pickerControl, animated: true, completion: nil)
+        presentViewController(pickerControl, animated: true, completion: nil)
     }
     
     @IBAction func cancel(sender: AnyObject) {
-        self.dismissViewControllerAnimated(true, completion: nil) // dismiss the modal view controller and return to the presenter
+        dismissViewControllerAnimated(true, completion: nil) // dismiss the modal view controller and return to the presenter
     }
 
     @IBAction func share(sender: AnyObject) {
@@ -110,14 +110,14 @@ class ViewController : UIViewControllerWithCenterInstructionLabel, UIImagePicker
             self.dismissViewControllerAnimated(true, completion: nil) // dismiss the modal view controller and return to the presenter
             }
         }
-        self.presentViewController(avc, animated: true, completion: nil)
+        presentViewController(avc, animated: true, completion: nil)
     }
     
     @IBAction func pickAnImageFromCamera(sender: AnyObject) {
         let pickerControl = UIImagePickerController()
         pickerControl.sourceType = UIImagePickerControllerSourceType.Camera
         pickerControl.delegate = self
-        self.presentViewController(pickerControl, animated: true, completion: nil)
+        presentViewController(pickerControl, animated: true, completion: nil)
     }
     
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [NSObject : AnyObject]){
@@ -125,10 +125,10 @@ class ViewController : UIViewControllerWithCenterInstructionLabel, UIImagePicker
             imageView.image = image
             afterImageSet()
         }
-        self.dismissViewControllerAnimated(true, completion: nil)
+        dismissViewControllerAnimated(true, completion: nil)
     }
     func imagePickerControllerDidCancel(picker: UIImagePickerController){
-        self.dismissViewControllerAnimated(true, completion: nil)
+        dismissViewControllerAnimated(true, completion: nil)
     }
     
     override func prefersStatusBarHidden() -> Bool{
@@ -161,7 +161,7 @@ class ViewController : UIViewControllerWithCenterInstructionLabel, UIImagePicker
     }
     
     func keyboardWillHide(notification: NSNotification) {
-        self.view.frame.origin.y = 0
+        view.frame.origin.y = 0
     }
     
     func getKeyboardHeight(notification: NSNotification) -> CGFloat {
@@ -193,8 +193,8 @@ class ViewController : UIViewControllerWithCenterInstructionLabel, UIImagePicker
         //from: http://stackoverflow.com/questions/12687909/ios-screenshot-part-of-the-screen
         // Render view to an image
         //first we will make an UIImage from your view
-        UIGraphicsBeginImageContext(self.view.bounds.size);
-        self.view.drawViewHierarchyInRect(self.view.frame, afterScreenUpdates: true)
+        UIGraphicsBeginImageContext(view.bounds.size);
+        view.drawViewHierarchyInRect(view.frame, afterScreenUpdates: true)
         var sourceImage = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext();
         

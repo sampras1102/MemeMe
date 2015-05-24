@@ -15,7 +15,7 @@ class MemeTextField: UITextField{
     init(initialText t:String) {
         initialText = t
         super.init(frame: CGRect(x: 0,y: 0,width: 100,height: 50))
-        self.text = initialText
+        text = initialText
         
         let memeTextAttributes = [
             NSStrokeColorAttributeName : UIColor.blackColor(),
@@ -23,11 +23,11 @@ class MemeTextField: UITextField{
             NSFontAttributeName : UIFont(name: "HelveticaNeue-CondensedBlack", size: 40)!,
             NSStrokeWidthAttributeName : -3.0
         ]
-        self.defaultTextAttributes = memeTextAttributes
-        self.autocapitalizationType = UITextAutocapitalizationType.AllCharacters
-        self.textAlignment = NSTextAlignment.Center //set this after the defaultTextAttributes
-        self.adjustsFontSizeToFitWidth = true
-        self.layer.zPosition = 1000
+        defaultTextAttributes = memeTextAttributes
+        autocapitalizationType = UITextAutocapitalizationType.AllCharacters
+        textAlignment = NSTextAlignment.Center //set this after the defaultTextAttributes
+        adjustsFontSizeToFitWidth = true
+        layer.zPosition = 1000
     }
     
     required init(coder aDecoder: NSCoder) {

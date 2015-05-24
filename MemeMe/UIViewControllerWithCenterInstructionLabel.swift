@@ -15,7 +15,7 @@ class UIViewControllerWithCenterInstructionLabel:UIViewController{
     
     override func viewWillAppear(animated: Bool){
         super.viewWillAppear(animated)
-        if let l = self.instructionLabel{
+        if let l = instructionLabel{
             l.hidden = hideInstructionLabel()
         }
     }
