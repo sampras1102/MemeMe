@@ -10,20 +10,12 @@ import UIKit
 
 class SavedMemesTableViewController: UIViewControllerWithCenterInstructionLabel, UITableViewDataSource, UITableViewDelegate {
     
-    @IBAction func addMeme(sender: AnyObject) {
-        let editController = self.storyboard!.instantiateViewControllerWithIdentifier("MemeEditViewController") as! ViewController
-        self.presentViewController(editController, animated: true, completion: nil)
-    }
-    @IBOutlet weak var tableViewOutlet: UITableView!
-
-    // MARK: Table View Data Source
-    
     var memes: [Meme]!
+    @IBOutlet weak var tableViewOutlet: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         instructionLabel = CenteredInstructionUILabel(superview: self.view, text: "Press the + button to add a meme")
-        self.tableViewOutlet.contentInset = UIEdgeInsetsMake(0,0,0,0)
     }
     
     override func hideInstructionLabel() -> Bool {
@@ -34,9 +26,7 @@ class SavedMemesTableViewController: UIViewControllerWithCenterInstructionLabel,
         let object = UIApplication.sharedApplication().delegate
         let appDelegate = object as! AppDelegate
         memes = appDelegate.memes //this needs to be the first thing that happens
-        if let m = memes{
-            tableViewOutlet.hidden = (m.count == 0)
-        }
+        tableViewOutlet.hidden = (memes?.count == 0)
         self.tabBarController?.tabBar.hidden = false
         tableViewOutlet.reloadData()
         
@@ -50,7 +40,7 @@ class SavedMemesTableViewController: UIViewControllerWithCenterInstructionLabel,
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCellWithIdentifier("MemeCell") as! UITableViewCell
-        let meme = self.memes[indexPath.row]
+        let meme = memes[indexPath.row]
         
         // Set the name and image
         cell.textLabel?.text = meme.topString + " " + meme.bottomString
@@ -61,20 +51,19 @@ class SavedMemesTableViewController: UIViewControllerWithCenterInstructionLabel,
             detailTextLabel.text = meme.bottomString
         }
         
-        println("\(cell.imageView?.frame)")
-        
-        cell.layoutMargins = UIEdgeInsetsZero;
-        cell.preservesSuperviewLayoutMargins = false
-        
         return cell
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
-        let detailController = self.storyboard!.instantiateViewControllerWithIdentifier("MemeDetailViewController") as! MemeDetailViewController
+        let detailController = storyboard!.instantiateViewControllerWithIdentifier("MemeDetailViewController") as! MemeDetailViewController
         detailController.index = indexPath.row
-        self.navigationController!.pushViewController(detailController, animated: true)
+        navigationController!.pushViewController(detailController, animated: true)
         
     }
-        
+    
+    @IBAction func addMeme(sender: AnyObject) {
+        let editController = self.storyboard!.instantiateViewControllerWithIdentifier("MemeEditViewController") as! ViewController
+        presentViewController(editController, animated: true, completion: nil)
+    }
 }

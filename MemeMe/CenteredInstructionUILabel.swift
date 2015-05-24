@@ -27,7 +27,6 @@ class CenteredInstructionUILabel: UILabel {
         
         let yCenterConstraint = NSLayoutConstraint(item: self, attribute: .CenterY, relatedBy: .Equal, toItem: superview, attribute: .CenterY, multiplier: 1, constant: 0)
         superview.addConstraint(yCenterConstraint)
-        
     }
     
     required init(coder aDecoder: NSCoder) {

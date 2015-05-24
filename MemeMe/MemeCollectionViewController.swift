@@ -36,9 +36,9 @@ class MemeCollectionViewController: UIViewControllerWithCenterInstructionLabel, 
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        var spacing = CGFloat(5.0)
-        var nItemsAcross = 3
-        var cellSize = (self.view.bounds.width - (CGFloat(nItemsAcross) + 1)*spacing)/CGFloat(nItemsAcross)
+        let spacing = CGFloat(5.0)
+        let nItemsAcross = 3
+        let cellSize = (self.view.bounds.width - (CGFloat(nItemsAcross) + 1)*spacing)/CGFloat(nItemsAcross)
         
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
         layout.sectionInset = UIEdgeInsets(top: spacing, left: spacing, bottom: spacing, right: spacing)
@@ -50,7 +50,6 @@ class MemeCollectionViewController: UIViewControllerWithCenterInstructionLabel, 
     }
     
     @IBAction func addMeme(sender: AnyObject) {
-        
         let editController = self.storyboard!.instantiateViewControllerWithIdentifier("MemeEditViewController") as! ViewController
         self.presentViewController(editController, animated: true, completion: nil)
     }
@@ -65,7 +64,7 @@ class MemeCollectionViewController: UIViewControllerWithCenterInstructionLabel, 
 
         let meme = self.memes[indexPath.row]
         
-        // Set the name and image
+        // Set the image
         cell.memeImageView?.image = meme.memedImage
         
         return cell
@@ -77,7 +76,6 @@ class MemeCollectionViewController: UIViewControllerWithCenterInstructionLabel, 
         let detailController = self.storyboard!.instantiateViewControllerWithIdentifier("MemeDetailViewController") as! MemeDetailViewController
         detailController.index = indexPath.row
         self.navigationController!.pushViewController(detailController, animated: true)
-        
     }
         
 }

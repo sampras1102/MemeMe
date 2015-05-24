@@ -9,10 +9,10 @@
 import UIKit
 
 struct Meme {
-    var topString:String!
-    var bottomString:String!
-    var originalImage:UIImage!
-    var memedImage:UIImage!
+    var topString:String
+    var bottomString:String
+    var originalImage:UIImage
+    var memedImage:UIImage
     
     init(topString:String, bottomString:String, originalImage:UIImage, memedImage:UIImage){
         self.topString = topString

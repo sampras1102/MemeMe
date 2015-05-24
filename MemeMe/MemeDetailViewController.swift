@@ -13,13 +13,12 @@ class MemeDetailViewController: UIViewController {
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var toolbar: UIToolbar!
     
-    var index:Int?
+    var index:Int? //index of meme in memes array
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        //add nav bar button
+        //add nav bar button for edit action
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Edit, target: self, action: "edit")
-        //self.navigationController?.hidesBarsOnTap = true //this is simple but it hides them everywhere, which I don't want
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -35,11 +34,6 @@ class MemeDetailViewController: UIViewController {
         navigationController?.setNavigationBarHidden(false, animated:false)
         toolbar.hidden = false
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
     
     @IBAction func deleteMeme(sender: AnyObject) {
         if let i = index{
@@ -49,7 +43,6 @@ class MemeDetailViewController: UIViewController {
     }
     
     func edit() {
-        
         let editController = self.storyboard!.instantiateViewControllerWithIdentifier("MemeEditViewController") as! ViewController
         if let i = index{
             editController.existingMeme = ((UIApplication.sharedApplication().delegate) as! AppDelegate).memes[i]
@@ -63,16 +56,14 @@ class MemeDetailViewController: UIViewController {
     //and http://stackoverflow.com/questions/3775577/uiimageview-touch-event
     
     override func touchesEnded(touches: Set<NSObject>, withEvent event: UIEvent) {
-        println("touches ended")
         let touch: UITouch? = touches.first as? UITouch
-        var v = touch?.view
+
         if (touch?.view == imageView || touch?.view == imageView.superview) {
             toggle()
         }
     }
     
     func toggle() {
-        println("in toggle")
         navigationController?.setNavigationBarHidden(navigationController?.navigationBarHidden == false, animated: true) //or animated: false
         toolbar.hidden = (toolbar.hidden == false)
     }

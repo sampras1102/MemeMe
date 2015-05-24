@@ -27,6 +27,7 @@ class MemeTextField: UITextField{
         self.autocapitalizationType = UITextAutocapitalizationType.AllCharacters
         self.textAlignment = NSTextAlignment.Center //set this after the defaultTextAttributes
         self.adjustsFontSizeToFitWidth = true
+        self.layer.zPosition = 1000
     }
     
     required init(coder aDecoder: NSCoder) {

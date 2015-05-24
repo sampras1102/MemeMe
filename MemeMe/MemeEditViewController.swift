@@ -25,7 +25,7 @@ class ViewController : UIViewControllerWithCenterInstructionLabel, UIImagePicker
         super.viewDidLoad()
         shareButton.enabled = false
         instructionLabel = CenteredInstructionUILabel(superview: self.view, text: "Take a picture or load an image to create a meme")
-        //TODO: Make sure I am handling the optionals in an acceptable way
+
         self.view.addSubview(topText)
         self.view.addSubview(bottomText)
         topText.delegate = self
@@ -77,15 +77,10 @@ class ViewController : UIViewControllerWithCenterInstructionLabel, UIImagePicker
         }
     }
     
-    //TODO: Implement cancel button
-    //TODO: Hide buttons on top
-    //TODO: Add instructions when loading app
-    
     func setTextBoxPosition(){
+        //this ensures that the text boxes are always on the image
         if let i = imageView.image{
             let imageFrame = frameForImage(i)
-            topText.layer.zPosition = 1000
-            bottomText.layer.zPosition = 1000
             
             var frameSize = topText.superview?.frame
             topText.frame = CGRect(x:0,y:0,width:imageFrame.width, height: 50)
@@ -96,7 +91,6 @@ class ViewController : UIViewControllerWithCenterInstructionLabel, UIImagePicker
     }
 
     @IBAction func pickAnImage(sender: AnyObject) {
-        println("in pick an image")
         let pickerControl = UIImagePickerController()
         pickerControl.sourceType = UIImagePickerControllerSourceType.PhotoLibrary
         pickerControl.delegate = self
@@ -119,19 +113,14 @@ class ViewController : UIViewControllerWithCenterInstructionLabel, UIImagePicker
         self.presentViewController(avc, animated: true, completion: nil)
     }
     
-
-    
     @IBAction func pickAnImageFromCamera(sender: AnyObject) {
-        println("in pick an image")
         let pickerControl = UIImagePickerController()
         pickerControl.sourceType = UIImagePickerControllerSourceType.Camera
         pickerControl.delegate = self
         self.presentViewController(pickerControl, animated: true, completion: nil)
-        
     }
     
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [NSObject : AnyObject]){
-        //didFinishPickingMediaWithInfo is the external name
         if let image = info[UIImagePickerControllerOriginalImage] as? UIImage{
             imageView.image = image
             afterImageSet()
@@ -184,16 +173,14 @@ class ViewController : UIViewControllerWithCenterInstructionLabel, UIImagePicker
     func save(memedImage:UIImage) {
         var meme = Meme(topString: topText.text, bottomString: bottomText.text, originalImage: imageView.image!, memedImage: memedImage)
         var appDel = (UIApplication.sharedApplication().delegate) as! AppDelegate
-        if existingMemeIndex > -1{
+        if existingMemeIndex > -1 {
             //replace the current saved meme with the edited version
             appDel.memes[existingMemeIndex] = meme
         }
         else{
             //Create the meme
             appDel.memes.append(meme)
-            println("num saved memes: \(((UIApplication.sharedApplication().delegate) as! AppDelegate).memes.count)")
         }
-        println("saving the meme")
     }
     
     func generateMemedImage() -> UIImage {
@@ -202,24 +189,20 @@ class ViewController : UIViewControllerWithCenterInstructionLabel, UIImagePicker
         navigationBar.hidden = true
         
         let imageFrame = frameForImage(imageView.image!)
-        println("imageFrame \(imageFrame)")
-        println("self.view.frame \(self.view.frame)")
         
         //from: http://stackoverflow.com/questions/12687909/ios-screenshot-part-of-the-screen
         // Render view to an image
         //first we will make an UIImage from your view
         UIGraphicsBeginImageContext(self.view.bounds.size);
-        //self.view.layer.renderInContext(UIGraphicsGetCurrentContext());
         self.view.drawViewHierarchyInRect(self.view.frame, afterScreenUpdates: true)
         var sourceImage = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext();
         
         //now we will position the image, X/Y away from top left corner to get the portion we want
         UIGraphicsBeginImageContext(imageFrame.size)
-        sourceImage.drawAtPoint(CGPoint(x: 0, y: -imageFrame.origin.y))
+        sourceImage.drawAtPoint(CGPoint(x: -imageFrame.origin.x, y: -imageFrame.origin.y))
         var memedImage = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext();
-        //UIImageWriteToSavedPhotosAlbum(memedImage,nil, nil, nil);
         
         toolbar.hidden = false
         navigationBar.hidden = false
@@ -227,8 +210,8 @@ class ViewController : UIViewControllerWithCenterInstructionLabel, UIImagePicker
         return memedImage
     }
     
-    //from: http://stackoverflow.com/questions/389342/how-to-get-the-size-of-a-scaled-uiimage-in-uiimageview/4987554#4987554
     func frameForImage(image: UIImage) -> CGRect {
+        //from: http://stackoverflow.com/questions/389342/how-to-get-the-size-of-a-scaled-uiimage-in-uiimageview/4987554#4987554
         var imageRatio = CGFloat(image.size.width / image.size.height)
         var scale:CGFloat = 0
         var width:CGFloat = 0
@@ -265,9 +248,7 @@ class ViewController : UIViewControllerWithCenterInstructionLabel, UIImagePicker
     }
     
     func textFieldDidBeginEditing(textField: UITextField){
-        println("begin editing")
         if let t = textField as? MemeTextField{
-            println("after optional unwrapping")
             if (t.text == t.initialText){
                 t.text = ""
             }
@@ -279,5 +260,20 @@ class ViewController : UIViewControllerWithCenterInstructionLabel, UIImagePicker
         return true;
     }
 
-}
+    //from http://stackoverflow.com/questions/26273672/how-to-hide-status-bar-and-navigation-bar-when-tap-device
+    //and http://stackoverflow.com/questions/3775577/uiimageview-touch-event
+    
+    override func touchesEnded(touches: Set<NSObject>, withEvent event: UIEvent) {
+        let touch: UITouch? = touches.first as? UITouch
 
+        if (touch?.view == imageView || touch?.view == imageView.superview) {
+            toggle()
+        }
+    }
+    
+    func toggle() {
+        navigationBar.hidden = (navigationBar.hidden == false)
+        toolbar.hidden = (toolbar.hidden == false)
+    }
+    
+}
