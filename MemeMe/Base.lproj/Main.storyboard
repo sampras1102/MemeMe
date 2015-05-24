@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7702" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="btJ-ak-n3V">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="btJ-ak-n3V">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7701"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
@@ -9,7 +9,8 @@
         <!--Tab Bar Controller-->
         <scene sceneID="pon-ug-XBE">
             <objects>
-                <tabBarController id="btJ-ak-n3V" sceneMemberID="viewController">
+                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="btJ-ak-n3V" sceneMemberID="viewController">
+                    <extendedEdge key="edgesForExtendedLayout"/>
                     <navigationItem key="navigationItem" id="NxC-Kq-zhG"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <tabBar key="tabBar" contentMode="scaleToFill" id="GJX-1P-hqv">
@@ -29,7 +30,8 @@
         <!--Table-->
         <scene sceneID="nuG-bZ-3QK">
             <objects>
-                <navigationController title="Table" id="WYM-1Q-E83" sceneMemberID="viewController">
+                <navigationController title="Table" automaticallyAdjustsScrollViewInsets="NO" id="WYM-1Q-E83" sceneMemberID="viewController">
+                    <extendedEdge key="edgesForExtendedLayout"/>
                     <tabBarItem key="tabBarItem" title="Table" image="Table Icon" id="JPz-5j-FH7"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="yeh-IO-ned">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
@@ -55,7 +57,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="tTJ-KF-kRQ">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="50" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="tTJ-KF-kRQ">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
@@ -64,6 +66,7 @@
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Cg7-fh-SjP" id="uLR-hW-CDg">
                                             <autoresizingMask key="autoresizingMask"/>
                                         </tableViewCellContentView>
+                                        <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                     </tableViewCell>
                                 </prototypes>
                                 <connections>
@@ -74,20 +77,20 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="tTJ-KF-kRQ" firstAttribute="leading" secondItem="GZa-rM-Omd" secondAttribute="leading" id="0hI-iI-qs9"/>
-                            <constraint firstItem="tTJ-KF-kRQ" firstAttribute="top" secondItem="ZZI-I3-0Y6" secondAttribute="bottom" id="SIZ-b7-xfC"/>
-                            <constraint firstAttribute="bottomMargin" secondItem="tTJ-KF-kRQ" secondAttribute="bottom" id="heI-cE-L7e"/>
-                            <constraint firstAttribute="trailing" secondItem="tTJ-KF-kRQ" secondAttribute="trailing" id="oGg-Pr-eyi"/>
+                            <constraint firstItem="tTJ-KF-kRQ" firstAttribute="top" secondItem="ZZI-I3-0Y6" secondAttribute="bottom" constant="5" id="Irp-bg-xNt"/>
+                            <constraint firstItem="tTJ-KF-kRQ" firstAttribute="leading" secondItem="GZa-rM-Omd" secondAttribute="leading" id="O9M-b1-prn"/>
+                            <constraint firstItem="tTJ-KF-kRQ" firstAttribute="trailing" secondItem="GZa-rM-Omd" secondAttribute="trailing" id="YaN-a1-wF1"/>
+                            <constraint firstItem="Jwq-BW-puv" firstAttribute="top" secondItem="tTJ-KF-kRQ" secondAttribute="bottom" constant="5" id="vEJ-Jp-1Qq"/>
                         </constraints>
                         <variation key="default">
                             <mask key="subviews">
                                 <exclude reference="tTJ-KF-kRQ"/>
                             </mask>
                             <mask key="constraints">
-                                <exclude reference="0hI-iI-qs9"/>
-                                <exclude reference="SIZ-b7-xfC"/>
-                                <exclude reference="heI-cE-L7e"/>
-                                <exclude reference="oGg-Pr-eyi"/>
+                                <exclude reference="vEJ-Jp-1Qq"/>
+                                <exclude reference="Irp-bg-xNt"/>
+                                <exclude reference="O9M-b1-prn"/>
+                                <exclude reference="YaN-a1-wF1"/>
                             </mask>
                         </variation>
                         <variation key="widthClass=compact">
@@ -95,10 +98,10 @@
                                 <include reference="tTJ-KF-kRQ"/>
                             </mask>
                             <mask key="constraints">
-                                <include reference="0hI-iI-qs9"/>
-                                <include reference="SIZ-b7-xfC"/>
-                                <include reference="heI-cE-L7e"/>
-                                <include reference="oGg-Pr-eyi"/>
+                                <include reference="vEJ-Jp-1Qq"/>
+                                <include reference="Irp-bg-xNt"/>
+                                <include reference="O9M-b1-prn"/>
+                                <include reference="YaN-a1-wF1"/>
                             </mask>
                         </variation>
                     </view>
@@ -232,10 +235,10 @@
                                 <exclude reference="lpZ-Za-iEP"/>
                             </mask>
                             <mask key="constraints">
+                                <exclude reference="7Kx-5Z-grl"/>
                                 <exclude reference="0U2-2s-98I"/>
                                 <exclude reference="cHS-vT-edQ"/>
                                 <exclude reference="rKD-xw-iOM"/>
-                                <exclude reference="7Kx-5Z-grl"/>
                             </mask>
                         </variation>
                         <variation key="widthClass=compact">
@@ -243,10 +246,10 @@
                                 <include reference="lpZ-Za-iEP"/>
                             </mask>
                             <mask key="constraints">
+                                <include reference="7Kx-5Z-grl"/>
                                 <include reference="0U2-2s-98I"/>
                                 <include reference="cHS-vT-edQ"/>
                                 <include reference="rKD-xw-iOM"/>
-                                <include reference="7Kx-5Z-grl"/>
                             </mask>
                         </variation>
                     </view>

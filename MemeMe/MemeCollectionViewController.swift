@@ -8,28 +8,30 @@
 
 import UIKit
 
-class MemeCollectionViewController: UIViewController, UICollectionViewDataSource {
-        
-    var instructions: UILabel!
+class MemeCollectionViewController: UIViewControllerWithCenterInstructionLabel, UICollectionViewDataSource {
+    
     @IBOutlet weak var collectionView: UICollectionView!
 
     var memes: [Meme]!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        instructions = InstructionLabelUtils.createLabelInViewController(self, text: "Press the + button to add a meme")
+        instructionLabel = CenteredInstructionUILabel(superview: self.view, text: "Press the + button to add a meme")
+    }
+    
+    override func hideInstructionLabel() -> Bool {
+        return !(memes == nil || memes.count == 0)
     }
     
     override func viewWillAppear(animated: Bool) {
-        super.viewWillAppear(animated)
-        
         let object = UIApplication.sharedApplication().delegate
         let appDelegate = object as! AppDelegate
-        memes = appDelegate.memes
+        memes = appDelegate.memes //this needs to happen first.  Call to super.viewWillAppear depends on knowing if there are memes
         
         self.collectionView.reloadData()
         self.tabBarController?.tabBar.hidden = false
-
+        
+        super.viewWillAppear(animated) //need to call this after memes variable gets updated
     }
     
     override func viewDidLayoutSubviews() {
@@ -45,9 +47,6 @@ class MemeCollectionViewController: UIViewController, UICollectionViewDataSource
         layout.minimumLineSpacing = 0
         self.collectionView.collectionViewLayout = layout
         self.collectionView.sendSubviewToBack(self.view)
-        
-        InstructionLabelUtils.centerLabelInViewFrame(instructions)
-        instructions.hidden = (memes.count != 0)
     }
     
     @IBAction func addMeme(sender: AnyObject) {
@@ -77,6 +76,7 @@ class MemeCollectionViewController: UIViewController, UICollectionViewDataSource
         
         let detailController = self.storyboard!.instantiateViewControllerWithIdentifier("MemeDetailViewController") as! MemeDetailViewController
         detailController.meme = self.memes[indexPath.row]
+        detailController.existingIndex = indexPath.row
         self.navigationController!.pushViewController(detailController, animated: true)
         
     }

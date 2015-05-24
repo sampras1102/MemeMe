@@ -1,5 +1,5 @@
 //
-//  SavedMemesTableViewController.swift
+//  MemeTableViewController.swift
 //  MemeMe
 //
 //  Created by Chris Supranowitz on 5/20/15.
@@ -8,10 +8,8 @@
 
 import UIKit
 
-class SavedMemesTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class SavedMemesTableViewController: UIViewControllerWithCenterInstructionLabel, UITableViewDataSource, UITableViewDelegate {
     
-    var instructions: UILabel!
-
     @IBAction func addMeme(sender: AnyObject) {
         let editController = self.storyboard!.instantiateViewControllerWithIdentifier("MemeEditViewController") as! ViewController
         self.presentViewController(editController, animated: true, completion: nil)
@@ -24,25 +22,25 @@ class SavedMemesTableViewController: UIViewController, UITableViewDataSource, UI
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        instructions = InstructionLabelUtils.createLabelInViewController(self, text: "Press the + button to add a meme")
+        instructionLabel = CenteredInstructionUILabel(superview: self.view, text: "Press the + button to add a meme")
+        self.tableViewOutlet.contentInset = UIEdgeInsetsMake(0,0,0,0)
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        InstructionLabelUtils.centerLabelInViewFrame(instructions)
+    override func hideInstructionLabel() -> Bool {
+        return !(memes == nil || memes.count == 0)
     }
     
     override func viewWillAppear(animated: Bool) {
-        super.viewWillAppear(animated)
-        
         let object = UIApplication.sharedApplication().delegate
         let appDelegate = object as! AppDelegate
-        memes = appDelegate.memes
-
-        instructions.hidden = (memes.count != 0)
-        tableViewOutlet.hidden = (memes.count == 0)
+        memes = appDelegate.memes //this needs to be the first thing that happens
+        if let m = memes{
+            tableViewOutlet.hidden = (m.count == 0)
+        }
         self.tabBarController?.tabBar.hidden = false
         tableViewOutlet.reloadData()
+        
+        super.viewWillAppear(animated) //need to call this after memes variable gets updated
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -58,10 +56,15 @@ class SavedMemesTableViewController: UIViewController, UITableViewDataSource, UI
         cell.textLabel?.text = meme.topString + " " + meme.bottomString
         cell.imageView?.image = meme.memedImage
         
-        // If the cell has a detail label, we will put the evil scheme in.
+        // If the cell has a detail label, we will display the text
         if let detailTextLabel = cell.detailTextLabel {
             detailTextLabel.text = meme.bottomString
         }
+        
+        println("\(cell.imageView?.frame)")
+        
+        cell.layoutMargins = UIEdgeInsetsZero;
+        cell.preservesSuperviewLayoutMargins = false
         
         return cell
     }
@@ -70,6 +73,7 @@ class SavedMemesTableViewController: UIViewController, UITableViewDataSource, UI
         
         let detailController = self.storyboard!.instantiateViewControllerWithIdentifier("MemeDetailViewController") as! MemeDetailViewController
         detailController.meme = self.memes[indexPath.row]
+        detailController.existingIndex = indexPath.row
         self.navigationController!.pushViewController(detailController, animated: true)
         
     }

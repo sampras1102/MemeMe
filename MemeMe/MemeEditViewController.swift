@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  MemeEditViewController.swift
 //  MemeMe
 //
 //  Created by Chris Supranowitz on 5/15/15.
@@ -8,16 +8,17 @@
 
 import UIKit
 
-class ViewController : UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class ViewController : UIViewControllerWithCenterInstructionLabel, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     var topText = UITextField()
     var bottomText = UITextField()
+    var existingIndex = -1
+    var existingMeme:Meme?
     @IBOutlet weak var cameraButton: UIBarButtonItem!
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var toolbar: UIToolbar!
     @IBOutlet weak var navigationBar: UINavigationBar!
     @IBOutlet weak var shareButton: UIBarButtonItem!
-    var instructions: UILabel!
     
     var topDel = MemeTextFieldDelegate(initialText: "TOP") //can't use a constant to define initial text because I am instantiating the object here
     
@@ -26,7 +27,7 @@ class ViewController : UIViewController, UIImagePickerControllerDelegate, UINavi
     override func viewDidLoad() {
         super.viewDidLoad()
         shareButton.enabled = false
-        instructions = InstructionLabelUtils.createLabelInViewController(self, text:"Take a picture or load an image to create a meme")
+        instructionLabel = CenteredInstructionUILabel(superview: self.view, text: "Take a picture or load an image to create a meme")
         //TODO: Make sure I am handling the optionals in an acceptable way
         topText.delegate = topDel
         bottomText.delegate = bottomDel
@@ -35,7 +36,11 @@ class ViewController : UIViewController, UIImagePickerControllerDelegate, UINavi
         topText.hidden = true
         bottomText.hidden = true
         
-        instructions.hidden = false
+        setMeme(existingMeme)
+    }
+    
+    override func hideInstructionLabel() -> Bool {
+        return (imageView.image != nil)
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -54,12 +59,25 @@ class ViewController : UIViewController, UIImagePickerControllerDelegate, UINavi
         super.viewDidLayoutSubviews()
         // call any manual layout functions here
         setTextBoxPosition()
-        InstructionLabelUtils.centerLabelInViewFrame(instructions)
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    
+    func afterImageSet(){
+        shareButton.enabled = true
+        topText.hidden = false
+        bottomText.hidden = false
+        if let l = self.instructionLabel{
+            l.hidden = true
+        }
+        setTextBoxPosition()
+    }
+    
+    func setMeme(meme: Meme?){
+        if let m = meme {
+            imageView.image = m.originalImage
+            topText.text = m.topString
+            bottomText.text = m.bottomString
+            afterImageSet()
+        }
     }
     
     //TODO: Implement cancel button
@@ -119,31 +137,7 @@ class ViewController : UIViewController, UIImagePickerControllerDelegate, UINavi
             self.dismissViewControllerAnimated(true, completion: nil) // dismiss the modal view controller and return to the presenter
             }
         }
-        //I don't think I need this...it does nothing even when running this on an ipad
-        //from: http://stackoverflow.com/questions/13433718/uiactivity-activityviewcontroller-being-presented-modally-on-ipad-instead-of-in
-        if (false){ // (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiom.Phone) {
-            self.presentViewController(avc, animated: true, completion: nil)
-        }
-        else{
-//            //from: http://stackoverflow.com/questions/28759365/uiactivity-activityviewcontroller-crash-on-ipad-in-swift
-//            var nav = UINavigationController(rootViewController: avc)
-//            nav.modalPresentationStyle = UIModalPresentationStyle.Popover
-//            var popover = nav.popoverPresentationController as UIPopoverPresentationController!
-//            avc.preferredContentSize = CGSizeMake(300,300)
-//            popover.sourceView = self.view
-//            popover.sourceRect = CGRectMake(100,100,0,0)
-//            
-//            self.presentViewController(nav, animated: true, completion: nil)
-        
-        //from: http://stackoverflow.com/questions/25644054/uiactivityviewcontroller-crashing-on-ios8-ipads
-            if let ppc = avc.popoverPresentationController {
-                ppc.sourceView = self.view;
-                var frame = UIScreen.mainScreen().bounds;
-                frame.size = CGSizeMake(frame.width, frame.height/CGFloat(2))
-                ppc.sourceRect = frame;
-            }
-            self.presentViewController(avc, animated: true, completion: nil)
-        }
+        self.presentViewController(avc, animated: true, completion: nil)
     }
     
 
@@ -161,11 +155,7 @@ class ViewController : UIViewController, UIImagePickerControllerDelegate, UINavi
         //didFinishPickingMediaWithInfo is the external name
         if let image = info[UIImagePickerControllerOriginalImage] as? UIImage{
             imageView.image = image
-            shareButton.enabled = true
-            topText.hidden = false
-            bottomText.hidden = false
-            instructions.hidden = true
-            setTextBoxPosition()
+            afterImageSet()
         }
         self.dismissViewControllerAnimated(true, completion: nil)
     }
@@ -213,12 +203,20 @@ class ViewController : UIViewController, UIImagePickerControllerDelegate, UINavi
     }
     
     func save(memedImage:UIImage) {
-        //Create the meme
-        var meme = Meme(topString: topText.text, bottomString: bottomText.text, originalImage: imageView.image!, memedImage: memedImage)
-        
-        ((UIApplication.sharedApplication().delegate) as! AppDelegate).memes.append(meme)
-        println(String(((UIApplication.sharedApplication().delegate) as! AppDelegate).memes.count) + " items in memes")
-        
+        if existingIndex > -1{
+            //TODO: Changed Meme to class but not sure if this is working correctly.  Thought the changes would automatically save, but they aren't.  Maybe just receive an index from the detail view and then edit that object directly
+            existingMeme?.topString = topText.text
+            existingMeme?.bottomString = bottomText.text
+            existingMeme?.originalImage = imageView.image!
+            existingMeme?.memedImage = memedImage
+        }
+        else{
+            //Create the meme
+            var meme = Meme(topString: topText.text, bottomString: bottomText.text, originalImage: imageView.image!, memedImage: memedImage)
+            
+            ((UIApplication.sharedApplication().delegate) as! AppDelegate).memes.append(meme)
+            println(String(((UIApplication.sharedApplication().delegate) as! AppDelegate).memes.count) + " items in memes")
+        }
         println("saving the meme")
     }
     

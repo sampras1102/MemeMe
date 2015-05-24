@@ -12,6 +12,13 @@ class MemeDetailViewController: UIViewController {
     
     @IBOutlet weak var imageView: UIImageView!
     var meme:Meme?
+    var existingIndex:Int?
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        //add nav bar button
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Edit, target: self, action: "edit")
+    }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
@@ -36,6 +43,18 @@ class MemeDetailViewController: UIViewController {
         if (touch?.view == imageView) {
             toggle()
         }
+    }
+    
+    
+    func edit() {
+
+        let editController = self.storyboard!.instantiateViewControllerWithIdentifier("MemeEditViewController") as! ViewController
+        if let m = self.meme{
+            editController.existingMeme = m
+            editController.existingIndex = existingIndex!
+            self.presentViewController(editController, animated: true, completion: nil)
+        }
+
     }
     
     func toggle() {
